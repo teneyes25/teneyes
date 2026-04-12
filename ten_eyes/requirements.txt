@@ -1,9 +1,0 @@
-streamlit
-fastapi
-uvicorn[standard]
-plotly
-pandas
-transformers
-torch
-requests
-python-dotenv

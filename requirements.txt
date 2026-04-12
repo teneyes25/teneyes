@@ -1,4 +1,4 @@
-# 대시보드·API (루트 app.py, api_server) + 기존 수집 파이프라인(src/)
+# TEN EYES — Streamlit 대시보드, FastAPI, 수집 파이프라인(teneyes/src) 공통 의존성
 streamlit
 fastapi
 uvicorn[standard]
