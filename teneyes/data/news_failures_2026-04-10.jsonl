@@ -1,0 +1,2 @@
+{"timestamp": "2026-04-10T09:53:18.137369+00:00", "source": "naver_politics", "url": "https://news.naver.com/rss/politics.xml", "event": "rss_unavailable_after_retries", "detail": "404 Client Error: Not Found for url: http://www.naver.com/err/notfound.html", "attempt": 5}
+{"timestamp": "2026-04-10T09:53:26.711931+00:00", "source": "naver_economy", "url": "https://news.naver.com/rss/economy.xml", "event": "rss_unavailable_after_retries", "detail": "404 Client Error: Not Found for url: http://www.naver.com/err/notfound.html", "attempt": 5}

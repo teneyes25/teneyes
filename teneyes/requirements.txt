@@ -1,0 +1,12 @@
+# 대시보드·API (루트 app.py, api_server) + 기존 수집 파이프라인(src/)
+streamlit
+fastapi
+uvicorn[standard]
+plotly
+pandas
+requests
+python-dotenv
+transformers
+torch
+beautifulsoup4
+feedparser
