@@ -1,8 +1,9 @@
 """
 TEN EYES REST API.
 
-실행 (teneyes 폴더에서):
-  uvicorn api_server:app --reload --host 127.0.0.1 --port 8000
+실행:
+  저장소 루트: uvicorn teneyes_api:app --reload --host 127.0.0.1 --port 8000
+  teneyes 폴더: uvicorn api_server:app --reload --host 127.0.0.1 --port 8000
 
 예:
   GET http://127.0.0.1:8000/conflict?date=2026-04-12

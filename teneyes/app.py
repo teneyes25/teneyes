@@ -1,8 +1,8 @@
 """
 TEN EYES — Streamlit 대시보드 (FastAPI 연동).
 
-1) API: teneyes 폴더에서 `uvicorn api_server:app --reload --host 127.0.0.1 --port 8000`
-2) UI:  `streamlit run app.py`
+1) API: 저장소 루트에서 `uvicorn teneyes_api:app --reload --host 127.0.0.1 --port 8000` (또는 teneyes 폴더에서 `uvicorn api_server:app ...`)
+2) UI: teneyes 폴더에서 `streamlit run app.py`
 """
 
 from __future__ import annotations
