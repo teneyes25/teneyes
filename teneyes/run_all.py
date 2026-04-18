@@ -1,15 +1,10 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
+import path_setup  # noqa: F401
 
-_SRC = Path(__file__).resolve().parent / "src"
-if str(_SRC) not in sys.path:
-    sys.path.insert(0, str(_SRC))
-
-from collectors.news_collector import collect_news, save_news
-from collectors.gov_collector import collect_gov, save_gov
-from collectors.econ_collector import collect_econ, save_econ
+from teneyes.collectors.econ_collector import collect_econ, save_econ
+from teneyes.collectors.gov_collector import collect_gov, save_gov
+from teneyes.collectors.news_collector import collect_news, save_news
 
 
 def run_all() -> None:
