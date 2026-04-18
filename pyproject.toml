@@ -1,0 +1,32 @@
+# Ten Eyes Platform — 구축 프로젝트 (저장소 루트 메타데이터)
+# 설치: pip install -e .
+# (의존성은 requirements.txt와 동기화 유지)
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "teneyes-platform"
+version = "0.1.0"
+description = "TEN EYES 플랫폼 구축 — 통합 앱·API(teneyes/), 루트 Uvicorn 진입(teneyes_api.py)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "streamlit",
+    "fastapi",
+    "uvicorn[standard]",
+    "plotly",
+    "pandas",
+    "requests",
+    "python-dotenv",
+    "transformers",
+    "torch",
+    "beautifulsoup4",
+    "feedparser",
+]
+
+[tool.setuptools.packages.find]
+where = ["teneyes/src"]
+namespaces = false

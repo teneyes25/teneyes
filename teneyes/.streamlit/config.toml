@@ -1,0 +1,4 @@
+# 멀티페이지 자동 사이드바 목록을 숨기고, app.py의 라디오 메뉴 + switch_page만 쓰는 경우에 유용합니다.
+# 자동 페이지 링크를 보고 싶으면 아래를 true로 바꾸거나 이 블록을 제거하세요.
+[client]
+showSidebarNavigation = false

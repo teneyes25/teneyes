@@ -1,1 +1,1 @@
-"""Ten Eyes data collection package."""
+"""레거시 네임스페이스. 앱 코드는 ``teneyes`` 패키지를 사용하세요."""
