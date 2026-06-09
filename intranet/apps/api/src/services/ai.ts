@@ -1,7 +1,12 @@
 import OpenAI from "openai";
 import { config } from "../config.js";
 
-export async function summarizeForCardNews(prompt: string) {
+export type ChatMessage = {
+  role: "system" | "user" | "assistant";
+  content: string;
+};
+
+export async function chatWithLlm(messages: ChatMessage[]) {
   if (config.AI_PROVIDER === "openai") {
     if (!config.OPENAI_API_KEY) {
       throw new Error("OPENAI_API_KEY is required when AI_PROVIDER=openai");
@@ -10,10 +15,7 @@ export async function summarizeForCardNews(prompt: string) {
     const client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
     const response = await client.chat.completions.create({
       model: config.OPENAI_MODEL,
-      messages: [
-        { role: "system", content: "사내 인트라넷 카드뉴스용으로 핵심만 한국어로 요약합니다." },
-        { role: "user", content: prompt }
-      ]
+      messages
     });
 
     return response.choices[0]?.message.content ?? "";
@@ -25,10 +27,12 @@ export async function summarizeForCardNews(prompt: string) {
     body: JSON.stringify({
       model: config.OLLAMA_MODEL,
       stream: false,
-      messages: [
-        { role: "system", content: "사내 인트라넷 카드뉴스용으로 핵심만 한국어로 요약합니다." },
-        { role: "user", content: prompt }
-      ]
+      options: {
+        num_ctx: 2048,
+        num_predict: 320,
+        temperature: 0.2
+      },
+      messages
     })
   });
 
@@ -38,4 +42,11 @@ export async function summarizeForCardNews(prompt: string) {
 
   const payload = (await response.json()) as { message?: { content?: string } };
   return payload.message?.content ?? "";
+}
+
+export async function summarizeForCardNews(prompt: string) {
+  return chatWithLlm([
+    { role: "system", content: "사내 인트라넷 카드뉴스용으로 핵심만 한국어로 요약합니다." },
+    { role: "user", content: prompt }
+  ]);
 }

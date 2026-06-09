@@ -1,5 +1,6 @@
 import { AttendancePanel } from "../components/attendance-panel";
 import { DocumentPanel } from "../components/document-panel";
+import { MaejongChatWidget } from "../components/maejong-chat-widget";
 import { ModuleGrid } from "../components/module-grid";
 import { PhaseTwoPanel } from "../components/phase-two-panel";
 
@@ -23,6 +24,7 @@ export default function Home() {
         <DocumentPanel />
       </div>
       <PhaseTwoPanel />
+      <MaejongChatWidget />
     </main>
   );
 }

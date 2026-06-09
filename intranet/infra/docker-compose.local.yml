@@ -48,6 +48,13 @@ services:
 
   ollama:
     image: ollama/ollama:latest
+    network_mode: bridge
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      OLLAMA_FLASH_ATTENTION: "false"
+      OLLAMA_LLM_LIBRARY: cpu
     ports:
       - "11434:11434"
     volumes:
@@ -68,6 +75,7 @@ services:
       PORT: 4000
       DATABASE_URL: postgres://intranet:intranet@host.docker.internal:5432/intranet
       CORS_ORIGIN: http://localhost:3000
+      CORS_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,http://192.168.0.6:3000,http://193.168.0.6:3000"
       AUTH_REQUIRED: "false"
       KEYCLOAK_ISSUER: http://host.docker.internal:8080/realms/maejong-intranet
       KEYCLOAK_AUDIENCE: intranet-api
@@ -82,7 +90,7 @@ services:
       SMTP_FROM: intranet@maejong.local
       AI_PROVIDER: ollama
       OLLAMA_BASE_URL: http://host.docker.internal:11434
-      OLLAMA_MODEL: llama3.1
+      OLLAMA_MODEL: smollm2:135m
       INDUSTRY_NEWS_SCHEDULER_ENABLED: "true"
       INDUSTRY_NEWS_CRON: "0 9 * * 1-5"
       INDUSTRY_NEWS_TIMEZONE: Asia/Seoul

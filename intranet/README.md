@@ -10,6 +10,7 @@ Next.js 프론트엔드, Express API, PostgreSQL, MinIO, Keycloak, Nginx, SMTP, 
 - Maejong AI 카드뉴스 요약: `AI_PROVIDER=ollama|openai`
 - 감사 로그: 로그인 확장 지점, 다운로드, 결재, 근태, 문서 업로드
 - 산업뉴스 스케줄러: 월~금 오전 9시(`Asia/Seoul`) RSS 1건 수집, 요약, `industry-news` 업로드
+- 메종이 AI Agent: 우측 하단 상담창에서 전자결재 기안, 업계뉴스, 브랜드 자료집 기반 상담
 
 ## 실행
 
@@ -54,6 +55,20 @@ curl -X POST http://localhost:4000/api/scheduler/industry-news/run
 ```bash
 curl http://localhost:4000/api/scheduler/industry-news
 ```
+
+## 메종이 AI Agent
+
+기본 무료 LLM은 Ollama `smollm2:135m`입니다. 더 좋은 한국어 품질이 필요하면 운영 장비에서 안정적으로 구동되는 Ollama 모델명으로 `OLLAMA_MODEL`을 교체합니다.
+
+```bash
+docker exec infra-ollama-1 ollama pull smollm2:135m
+curl http://localhost:4000/api/agent/status
+curl -X POST http://localhost:4000/api/agent/chat \
+  -H "content-type: application/json" \
+  -d '{"context":"approval","message":"기안문 구성을 도와줘","draftTitle":"브랜드 자료집 배포","draftBody":"대리점에 새 브랜드 자료집을 배포하려고 합니다."}'
+```
+
+메종이는 전자결재 기안문, `industry-news` 요약, `product-catalog` 콘텐츠, 브랜드/카탈로그 태그 문서 메타데이터를 참조합니다.
 
 ## 주요 URL
 
