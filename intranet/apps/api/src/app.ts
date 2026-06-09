@@ -9,6 +9,7 @@ import { approvalRouter } from "./modules/approvalRoutes.js";
 import { attendanceRouter } from "./modules/attendanceRoutes.js";
 import { contentRouter } from "./modules/contentRoutes.js";
 import { documentRouter } from "./modules/documentRoutes.js";
+import { schedulerRouter } from "./modules/schedulerRoutes.js";
 
 export function createApp() {
   const app = express();
@@ -27,6 +28,7 @@ export function createApp() {
   app.use("/api/documents", documentRouter);
   app.use("/api/admin", adminRouter);
   app.use("/api/ai", aiRouter);
+  app.use("/api/scheduler", schedulerRouter);
   app.use("/api", contentRouter);
 
   app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

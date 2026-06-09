@@ -9,6 +9,7 @@ Next.js 프론트엔드, Express API, PostgreSQL, MinIO, Keycloak, Nginx, SMTP, 
 - 공지사항, 산업뉴스, Q&A, 규정, 전자결재, 문서함, 조직도, 내 프로필, 제품 카탈로그, 대리점, 근태, 관리자
 - Maejong AI 카드뉴스 요약: `AI_PROVIDER=ollama|openai`
 - 감사 로그: 로그인 확장 지점, 다운로드, 결재, 근태, 문서 업로드
+- 산업뉴스 스케줄러: 월~금 오전 9시(`Asia/Seoul`) RSS 1건 수집, 요약, `industry-news` 업로드
 
 ## 실행
 
@@ -31,6 +32,28 @@ docker compose -f infra/docker-compose.local.yml up --build
 ```
 
 `infra/nginx/certs/`는 로컬 개발용 인증서 위치이며 Git에는 저장하지 않습니다.
+
+## 산업뉴스 스케줄러
+
+기본값은 평일 오전 9시 1건 업로드입니다.
+
+```bash
+INDUSTRY_NEWS_SCHEDULER_ENABLED=true
+INDUSTRY_NEWS_CRON="0 9 * * 1-5"
+INDUSTRY_NEWS_TIMEZONE=Asia/Seoul
+```
+
+오늘 수동으로 1건 실행:
+
+```bash
+curl -X POST http://localhost:4000/api/scheduler/industry-news/run
+```
+
+상태 확인:
+
+```bash
+curl http://localhost:4000/api/scheduler/industry-news
+```
 
 ## 주요 URL
 
