@@ -1,5 +1,6 @@
 import { AttendancePanel } from "../components/attendance-panel";
 import { DocumentPanel } from "../components/document-panel";
+import { IndustryNewsBoard } from "../components/industry-news-board";
 import { MaejongChatWidget } from "../components/maejong-chat-widget";
 import { ModuleGrid } from "../components/module-grid";
 import { PhaseTwoPanel } from "../components/phase-two-panel";
@@ -18,6 +19,7 @@ export default function Home() {
           <strong>AD LDAP + Keycloak RBAC</strong>
         </div>
       </section>
+      <IndustryNewsBoard />
       <ModuleGrid />
       <div className="split">
         <AttendancePanel />
