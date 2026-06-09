@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import request from "supertest";
 import { createApp } from "./app.js";
+import { configSchema } from "./config.js";
 
 test("health endpoint reports API status", async () => {
   const response = await request(createApp()).get("/healthz").expect(200);
@@ -26,4 +27,15 @@ test("module registry exposes all required intranet modules", async () => {
     "attendance",
     "admin"
   ]);
+});
+
+test("environment booleans parse string false correctly", () => {
+  const parsed = configSchema.parse({
+    AUTH_REQUIRED: "false",
+    MINIO_USE_SSL: "false",
+    SMTP_FROM: "intranet@maejong.local"
+  });
+
+  assert.equal(parsed.AUTH_REQUIRED, false);
+  assert.equal(parsed.MINIO_USE_SSL, false);
 });

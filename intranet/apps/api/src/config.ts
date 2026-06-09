@@ -3,17 +3,33 @@ import { z } from "zod";
 
 dotenv.config();
 
-const schema = z.object({
+const envBoolean = z.preprocess((value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  if (["true", "1", "yes", "on"].includes(value.toLowerCase())) {
+    return true;
+  }
+
+  if (["false", "0", "no", "off"].includes(value.toLowerCase())) {
+    return false;
+  }
+
+  return value;
+}, z.boolean());
+
+export const configSchema = z.object({
   NODE_ENV: z.string().default("development"),
   PORT: z.coerce.number().default(4000),
   DATABASE_URL: z.string().default("postgres://intranet:intranet@localhost:5432/intranet"),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
   KEYCLOAK_ISSUER: z.string().default("http://localhost:8080/realms/maejong-intranet"),
   KEYCLOAK_AUDIENCE: z.string().default("intranet-api"),
-  AUTH_REQUIRED: z.coerce.boolean().default(false),
+  AUTH_REQUIRED: envBoolean.default(false),
   MINIO_ENDPOINT: z.string().default("localhost"),
   MINIO_PORT: z.coerce.number().default(9000),
-  MINIO_USE_SSL: z.coerce.boolean().default(false),
+  MINIO_USE_SSL: envBoolean.default(false),
   MINIO_ACCESS_KEY: z.string().default("minioadmin"),
   MINIO_SECRET_KEY: z.string().default("minioadmin"),
   MINIO_BUCKET: z.string().default("documents"),
@@ -27,4 +43,4 @@ const schema = z.object({
   OPENAI_MODEL: z.string().default("gpt-4o-mini")
 });
 
-export const config = schema.parse(process.env);
+export const config = configSchema.parse(process.env);

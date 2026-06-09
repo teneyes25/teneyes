@@ -22,8 +22,15 @@ npm run dev
 
 ```bash
 cd intranet
+mkdir -p infra/nginx/certs
+openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
+  -keyout infra/nginx/certs/intranet.key \
+  -out infra/nginx/certs/intranet.crt \
+  -subj "/CN=localhost"
 docker compose -f infra/docker-compose.local.yml up --build
 ```
+
+`infra/nginx/certs/`는 로컬 개발용 인증서 위치이며 Git에는 저장하지 않습니다.
 
 ## 주요 URL
 
