@@ -23,13 +23,15 @@ def render_history_section(
     *,
     data_dir: Path | None = None,
     end: str | datetime.date | None = None,
-    tail: int = 30,
+    tail: int | None = 30,
+    title: str = "히스토리",
 ) -> None:
     """
     `end`가 있으면 해당 날짜 이하만 남기고, 최신 `tail`행을 표로 표시합니다.
+    `tail=None`이면 모든 행을 표시합니다.
     `data_dir` 기본값은 `teneyes/data/`.
     """
-    st.subheader("히스토리")
+    st.subheader(title)
 
     resolved = (data_dir.resolve() if data_dir is not None else Path(__file__).resolve().parents[1] / "data")
     df = _cached_history(str(resolved))
@@ -46,7 +48,9 @@ def render_history_section(
         st.info("선택한 날짜 이전에 표시할 이력이 없습니다.")
         return
 
-    out = out.sort_values("date").tail(tail)
+    out = out.sort_values("date")
+    if tail is not None:
+        out = out.tail(tail)
     display = out.copy()
     display["date"] = display["date"].dt.strftime("%Y-%m-%d")
     display = display.rename(
@@ -58,4 +62,5 @@ def render_history_section(
         }
     )
 
+    st.caption(f"총 {len(display)}개의 분석 기록을 표시합니다.")
     st.dataframe(display, use_container_width=True, hide_index=True)
