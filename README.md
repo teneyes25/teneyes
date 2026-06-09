@@ -21,10 +21,15 @@ repo_root/                    ← 이 폴더 = Ten Eyes Platform 루트
     pyproject.toml
     AGENTS.md
     teneyes/                  # 메인: Streamlit, FastAPI, src/teneyes, data/
+    intranet/                 # 매종 인트라넷: Next.js, Express, PostgreSQL, MinIO, Keycloak, Nginx
     teneyes_api.py            # 루트에서 uvicorn 진입 시 teneyes/ 를 path에 추가
     requirements.txt          # pip 용 (pyproject와 동기화 권장)
     README.md
 ```
+
+## 매종 인트라넷
+
+Phase 2 준비용 인트라넷 프로젝트는 [`intranet/`](./intranet/)에 분리되어 있습니다. 로컬 실행은 `cd intranet && npm install && npm run dev`, 전체 인프라는 `docker compose -f infra/docker-compose.local.yml up --build`를 사용합니다.
 
 ## 설치（편집 가능 설치）
 

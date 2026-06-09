@@ -1,0 +1,21 @@
+{
+  "name": "maejong-intranet",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "docker:local": "docker compose -f infra/docker-compose.local.yml up --build"
+  },
+  "overrides": {
+    "postcss": "^8.5.15",
+    "next": {
+      "postcss": "^8.5.15"
+    }
+  }
+}
