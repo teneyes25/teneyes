@@ -15,6 +15,7 @@ import streamlit as st
 from home_dashboard import render_home_dashboard
 from keyword_premium import render_keyword_insight
 from news_analysis import render_daily_report
+from project_archive import render_project_archive
 
 
 def _ensure_session_defaults() -> None:
@@ -71,7 +72,7 @@ st.sidebar.title("TEN EYES 메뉴")
 
 menu = st.sidebar.radio(
     "이동",
-    ["홈 대시보드", "전체 뉴스 분석", "키워드 심층 분석 (Premium)", "설정"],
+    ["홈 대시보드", "프로젝트 아카이브", "전체 뉴스 분석", "키워드 심층 분석 (Premium)", "설정"],
 )
 
 api_base = str(st.session_state.api_base).rstrip("/")
@@ -79,6 +80,9 @@ ten_eyes_url = f"{api_base}/ten-eyes"
 
 if menu == "홈 대시보드":
     render_home_dashboard(ten_eyes_url)
+
+elif menu == "프로젝트 아카이브":
+    render_project_archive()
 
 elif menu == "전체 뉴스 분석":
     render_daily_report(ten_eyes_url)
