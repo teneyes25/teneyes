@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -25,6 +25,8 @@ export function MaejongChatWidget() {
   const [message, setMessage] = useState("");
   const [draftTitle, setDraftTitle] = useState("");
   const [draftBody, setDraftBody] = useState("");
+  const [conversationId, setConversationId] = useState<string>();
+  const [uploadStatus, setUploadStatus] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -54,10 +56,14 @@ export function MaejongChatWidget() {
           message: userMessage,
           context: effectiveContext,
           draftTitle: draftTitle || undefined,
-          draftBody: draftBody || undefined
+          draftBody: draftBody || undefined,
+          conversationId
         })
       });
       const payload = await response.json();
+      if (payload.conversationId) {
+        setConversationId(payload.conversationId);
+      }
       setMessages((current) => [
         ...current,
         {
@@ -75,6 +81,33 @@ export function MaejongChatWidget() {
       ]);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function uploadKnowledge(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setUploadStatus("파일을 분석하고 학습 중입니다...");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("title", file.name);
+    formData.append("tags", "메종이,업로드,매트리스,침구");
+    formData.append("memo", "인트라넷 홈페이지 메종이 채팅창에서 사용자가 업로드한 자료입니다.");
+
+    try {
+      const response = await fetch(`${baseUrl}/api/agent/knowledge/upload`, {
+        method: "POST",
+        body: formData
+      });
+      const payload = await response.json();
+      setUploadStatus(payload.learned ? `학습 완료: ${file.name}` : "학습 처리에 실패했습니다.");
+    } catch {
+      setUploadStatus("파일 업로드 API에 연결하지 못했습니다.");
+    } finally {
+      event.target.value = "";
     }
   }
 
@@ -106,6 +139,11 @@ export function MaejongChatWidget() {
               <input value={draftTitle} onChange={(event) => setDraftTitle(event.target.value)} placeholder="기안 제목" />
               <textarea value={draftBody} onChange={(event) => setDraftBody(event.target.value)} placeholder="기안 초안 또는 고민되는 문장을 붙여넣으세요." />
             </div>
+            <label className="upload-box">
+              파일/캡처 학습
+              <input accept=".txt,.md,.csv,.json,.html,.png,.jpg,.jpeg,.webp" onChange={uploadKnowledge} type="file" />
+              {uploadStatus ? <span>{uploadStatus}</span> : <span>자료집, 메모, 캡처 이미지를 올리면 메종이가 3일 대화 기억과 별도로 지식으로 참고합니다.</span>}
+            </label>
           </div>
           <div className="chat-log">
             {messages.map((item, index) => (
@@ -114,7 +152,7 @@ export function MaejongChatWidget() {
             {loading ? <p className="assistant">메종이가 사내 자료를 확인 중입니다...</p> : null}
           </div>
           <form onSubmit={submit}>
-            <input value={message} onChange={(event) => setMessage(event.target.value)} placeholder="메종이에게 물어보기" />
+            <input value={message} onChange={(event) => setMessage(event.target.value)} placeholder="메시지를 입력하고 전송을 누르세요" />
             <button type="submit" disabled={loading}>전송</button>
           </form>
         </section>

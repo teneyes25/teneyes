@@ -1,9 +1,10 @@
 import { config } from "../config.js";
 import { query } from "../db/pool.js";
+import { getAgentPersona, recentConversationContext, saveAgentMessage, searchAgentKnowledge } from "./agentMemory.js";
 import { chatWithLlm, type ChatMessage } from "./ai.js";
 
 export type AgentSource = {
-  type: "approval" | "industry-news" | "brand" | "document";
+  type: "approval" | "industry-news" | "brand" | "document" | "agent-knowledge" | "conversation";
   title: string;
   excerpt: string;
   updatedAt?: string;
@@ -14,6 +15,8 @@ export type AgentChatInput = {
   context?: "general" | "approval" | "industry-news" | "brand";
   draftTitle?: string;
   draftBody?: string;
+  conversationId?: string;
+  userId?: string;
 };
 
 function normalize(value: unknown) {
@@ -59,7 +62,9 @@ function fallbackAdvice(input: AgentChatInput, sources: AgentSource[]) {
   return [
     "메종이입니다. 사내 지식 기반으로 요약해 안내드립니다.",
     sourceLine,
-    "업계뉴스, 브랜드 자료, 전자결재 사례를 함께 참고해 영업/제품/대리점 관점의 실행 포인트를 정리해 드릴 수 있습니다."
+    "상담 방향: 매트리스/침구 상품은 소재, 계절성, 가격대, 체험 포인트, 대리점 설명 문구를 함께 보겠습니다.",
+    "예: 냉감 토퍼는 여름 시즌 체감 온도, 세탁/관리 편의성, 매트리스와의 세트 제안, 프로모션 문구를 중심으로 컨설팅할 수 있습니다.",
+    "업계뉴스, 브랜드 자료, 업로드한 자료집, 최근 대화 기억을 함께 참고해 사용자 상황에 맞춘 실행 포인트를 정리해 드리겠습니다."
   ].join("\n\n");
 }
 
@@ -81,6 +86,26 @@ function isLowQualityAnswer(answer: string) {
 export async function collectAgentSources(input: AgentChatInput) {
   const sources: AgentSource[] = [];
   const search = searchPattern(input);
+
+  const memory = await recentConversationContext(input.userId ?? "dev-user", input.conversationId);
+  if (memory) {
+    sources.push({
+      type: "conversation",
+      title: "최근 3일 내 사용자 대화 기억",
+      excerpt: excerpt(memory, 700),
+      updatedAt: new Date().toISOString()
+    });
+  }
+
+  const knowledgeRows = await searchAgentKnowledge(search.replaceAll("%", ""));
+  for (const row of knowledgeRows) {
+    sources.push({
+      type: "agent-knowledge",
+      title: `[메종이 학습자료/${row.source_type}] ${row.title}`,
+      excerpt: excerpt(row.content, 500),
+      updatedAt: row.created_at?.toISOString()
+    });
+  }
 
   const approvals = await query<{
     title: string;
@@ -166,6 +191,18 @@ export async function collectAgentSources(input: AgentChatInput) {
 }
 
 export async function chatWithMaejongAgent(input: AgentChatInput) {
+  const userId = input.userId ?? "dev-user";
+  const conversationId = await saveAgentMessage({
+    conversationId: input.conversationId,
+    userId,
+    role: "user",
+    content: input.message,
+    metadata: {
+      context: input.context,
+      draftTitle: input.draftTitle,
+      hasDraftBody: Boolean(input.draftBody)
+    }
+  });
   const sources = await collectAgentSources(input);
   const knowledge = sources.slice(0, 4).map((source, index) => [
     `#${index + 1} ${source.title}`,
@@ -174,11 +211,14 @@ export async function chatWithMaejongAgent(input: AgentChatInput) {
     `내용: ${source.excerpt}`
   ].filter(Boolean).join("\n")).join("\n\n");
 
+  const persona = await getAgentPersona();
   const system = [
     "너는 매종 인트라넷 전용 무료 LLM AI Agent '메종이'다.",
-    "역할: 사내 컨설턴트, 전자결재 기안 코치, 업계뉴스/브랜드 자료 기반 상담자.",
+    persona ? `관리자 지정 페르소나: ${persona}` : "기본 페르소나: 국내 최고의 매트리스/침구/수면 업계 전문가이자 사내 컨설턴트.",
+    "역할: 일반 사용자와 자연스럽게 대화하고, 매트리스/침구 업계 컨설팅, 전자결재 기안 코칭, 업계뉴스/브랜드 자료 기반 상담을 제공한다.",
     "답변은 한국어로 5개 bullet 이내로 작성한다.",
-    "전자결재 기안은 목적/배경/요청/근거/리스크/실행계획을 점검한다.",
+    "전자결재 기안은 행안부식 문서 원칙을 참고해 제목/목적/배경/요청/근거/예산/리스크/실행계획을 점검한다.",
+    "사용자와의 최근 3일 대화 기억과 업로드 지식을 참고하되, 개인정보를 과도하게 노출하지 않는다.",
     "제공된 사내 지식에 없는 내용은 추측하지 말고 확인이 필요하다고 말한다.",
     `현재 LLM provider: ${config.AI_PROVIDER}, model: ${config.AI_PROVIDER === "ollama" ? config.OLLAMA_MODEL : config.OPENAI_MODEL}`
   ].join("\n");
@@ -197,7 +237,16 @@ export async function chatWithMaejongAgent(input: AgentChatInput) {
   ];
 
   if (config.AI_PROVIDER === "ollama" && config.OLLAMA_MODEL === "smollm2:135m") {
+    const answer = fallbackAdvice(input, sources);
+    await saveAgentMessage({
+      conversationId,
+      userId,
+      role: "assistant",
+      content: answer,
+      metadata: { fallback: true, fallbackReason: "small-local-model-consultant-mode" }
+    });
     return {
+      conversationId,
       answer: fallbackAdvice(input, sources),
       provider: config.AI_PROVIDER,
       model: config.OLLAMA_MODEL,
@@ -210,8 +259,17 @@ export async function chatWithMaejongAgent(input: AgentChatInput) {
   try {
     const answer = await chatWithLlm(messages);
     if (isLowQualityAnswer(answer)) {
+      const fallback = fallbackAdvice(input, sources);
+      await saveAgentMessage({
+        conversationId,
+        userId,
+        role: "assistant",
+        content: fallback,
+        metadata: { fallback: true, fallbackReason: "llm-quality-guard" }
+      });
       return {
-        answer: fallbackAdvice(input, sources),
+        conversationId,
+        answer: fallback,
         provider: config.AI_PROVIDER,
         model: config.AI_PROVIDER === "ollama" ? config.OLLAMA_MODEL : config.OPENAI_MODEL,
         fallback: true,
@@ -220,8 +278,17 @@ export async function chatWithMaejongAgent(input: AgentChatInput) {
       };
     }
 
+    const finalAnswer = answer.trim() || fallbackAdvice(input, sources);
+    await saveAgentMessage({
+      conversationId,
+      userId,
+      role: "assistant",
+      content: finalAnswer,
+      metadata: { fallback: false }
+    });
     return {
-      answer: answer.trim() || fallbackAdvice(input, sources),
+      conversationId,
+      answer: finalAnswer,
       provider: config.AI_PROVIDER,
       model: config.AI_PROVIDER === "ollama" ? config.OLLAMA_MODEL : config.OPENAI_MODEL,
       fallback: false,
@@ -229,8 +296,17 @@ export async function chatWithMaejongAgent(input: AgentChatInput) {
     };
   } catch (error) {
     console.warn("Maejong agent LLM failed; using fallback.", error);
+    const fallback = fallbackAdvice(input, sources);
+    await saveAgentMessage({
+      conversationId,
+      userId,
+      role: "assistant",
+      content: fallback,
+      metadata: { fallback: true, error: error instanceof Error ? error.message : "unknown" }
+    });
     return {
-      answer: fallbackAdvice(input, sources),
+      conversationId,
+      answer: fallback,
       provider: config.AI_PROVIDER,
       model: config.AI_PROVIDER === "ollama" ? config.OLLAMA_MODEL : config.OPENAI_MODEL,
       fallback: true,

@@ -86,6 +86,46 @@ create table if not exists audit_logs (
 create index if not exists audit_logs_action_idx on audit_logs (action, created_at desc);
 create index if not exists audit_logs_actor_idx on audit_logs (actor_id, created_at desc);
 
+create table if not exists agent_settings (
+  key text primary key,
+  value text not null,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists agent_conversations (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  title text,
+  expires_at timestamptz not null default now() + interval '3 days',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists agent_messages (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references agent_conversations(id) on delete cascade,
+  role text not null check (role in ('user', 'assistant')),
+  content text not null,
+  metadata jsonb not null default '{}',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists agent_knowledge (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  content text not null,
+  source_type text not null,
+  tags text[] not null default '{}',
+  metadata jsonb not null default '{}',
+  created_by text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists agent_conversations_user_idx on agent_conversations (user_id, updated_at desc);
+create index if not exists agent_messages_conversation_idx on agent_messages (conversation_id, created_at asc);
+create index if not exists agent_knowledge_tags_idx on agent_knowledge using gin (tags);
+create index if not exists agent_knowledge_text_idx on agent_knowledge using gin (to_tsvector('simple', title || ' ' || content));
+
 insert into document_folders (name, allowed_roles)
 values ('전사 공유', '{employee}'), ('대리점 자료', '{dealer,sales,admin}')
 on conflict do nothing;

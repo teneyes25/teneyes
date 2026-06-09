@@ -35,7 +35,7 @@ docker compose -f infra/docker-compose.local.yml up --build
 
 `infra/nginx/certs/`는 로컬 개발용 인증서 위치이며 Git에는 저장하지 않습니다.
 
-개발 기준 접속 위치는 `http://192.168.0.6:3000`입니다. Cloud/VM 재시작 후 이 주소가 응답하지 않으면 `sh scripts/bind-intranet-ip.sh`를 먼저 실행합니다.
+개발 기준 접속 위치는 `http://192.168.0.6:3000`이며, 앞으로 이 메인 페이지를 **인트라넷 홈페이지**라고 부릅니다. Cloud/VM 재시작 후 이 주소가 응답하지 않으면 `sh scripts/bind-intranet-ip.sh`를 먼저 실행합니다.
 
 ## 산업뉴스 스케줄러
 
@@ -66,6 +66,11 @@ curl http://localhost:4000/api/scheduler/industry-news
 
 기본 무료 LLM은 Ollama `smollm2:135m`입니다. 더 좋은 한국어 품질이 필요하면 운영 장비에서 안정적으로 구동되는 Ollama 모델명으로 `OLLAMA_MODEL`을 교체합니다.
 
+- 기본 역할: 국내 매트리스·침구·수면 업계 컨설턴트
+- 대화 기억: 사용자별 대화는 최대 3일간만 저장하고 만료 시 자동 삭제
+- 학습 자료: 채팅창에서 텍스트 파일, 자료집 메모, 캡처 이미지를 업로드하면 메종이 지식으로 저장
+- 전자결재 지원: 행안부식 기안문 기본 원칙을 seed 지식으로 포함하고, 관리자 페르소나/추가 서식을 업로드해 확장 가능
+
 ```bash
 docker exec infra-ollama-1 ollama pull smollm2:135m
 curl http://localhost:4000/api/agent/status
@@ -75,6 +80,24 @@ curl -X POST http://localhost:4000/api/agent/chat \
 ```
 
 메종이는 전자결재 기안문, `industry-news` 요약, `product-catalog` 콘텐츠, 브랜드/카탈로그 태그 문서 메타데이터를 참조합니다.
+
+관리자 페르소나 지정:
+
+```bash
+curl -X PUT http://localhost:4000/api/agent/admin/persona \
+  -H "content-type: application/json" \
+  -d '{"persona":"메종이는 프리미엄 매트리스와 침구 시장 컨설턴트로 답변한다."}'
+```
+
+파일/캡처 학습:
+
+```bash
+curl -X POST http://localhost:4000/api/agent/knowledge/upload \
+  -F title="브랜드 자료집" \
+  -F tags="브랜드,매트리스,침구" \
+  -F memo="신규 브랜드 자료집" \
+  -F file=@./brand-note.txt
+```
 
 ## 주요 URL
 
