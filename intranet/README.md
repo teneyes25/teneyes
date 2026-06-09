@@ -9,7 +9,7 @@ Next.js 프론트엔드, Express API, PostgreSQL, MinIO, Keycloak, Nginx, SMTP, 
 - 공지사항, 산업뉴스, Q&A, 규정, 전자결재, 문서함, 조직도, 내 프로필, 제품 카탈로그, 대리점, 근태, 관리자
 - Maejong AI 카드뉴스 요약: `AI_PROVIDER=ollama|openai`
 - 감사 로그: 로그인 확장 지점, 다운로드, 결재, 근태, 문서 업로드
-- 산업뉴스 스케줄러: 월~금 오전 9시(`Asia/Seoul`) RSS 1건 수집, 요약, `industry-news` 업로드
+- 산업뉴스 스케줄러: 월~금 오전 9시(`Asia/Seoul`) 침구/수면 키워드 뉴스 수집, 중요도 1건 선정, 요약, `industry-news` 업로드
 - 메종이 AI Agent: 우측 하단 상담창에서 전자결재 기안, 업계뉴스, 브랜드 자료집 기반 상담
 
 ## 실행
@@ -24,6 +24,7 @@ npm run dev
 
 ```bash
 cd intranet
+sh scripts/bind-intranet-ip.sh
 mkdir -p infra/nginx/certs
 openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
   -keyout infra/nginx/certs/intranet.key \
@@ -34,6 +35,8 @@ docker compose -f infra/docker-compose.local.yml up --build
 
 `infra/nginx/certs/`는 로컬 개발용 인증서 위치이며 Git에는 저장하지 않습니다.
 
+개발 기준 접속 위치는 `http://192.168.0.6:3000`입니다. Cloud/VM 재시작 후 이 주소가 응답하지 않으면 `sh scripts/bind-intranet-ip.sh`를 먼저 실행합니다.
+
 ## 산업뉴스 스케줄러
 
 기본값은 평일 오전 9시 1건 업로드입니다.
@@ -42,7 +45,10 @@ docker compose -f infra/docker-compose.local.yml up --build
 INDUSTRY_NEWS_SCHEDULER_ENABLED=true
 INDUSTRY_NEWS_CRON="0 9 * * 1-5"
 INDUSTRY_NEWS_TIMEZONE=Asia/Seoul
+INDUSTRY_NEWS_KEYWORDS=침구,매트리스,이불,베개,베게,냉감,모달,양모,침대,극세사,세사,순면,토퍼,쇼파,소파
 ```
+
+뉴스 후보는 Google News RSS에서 키워드별로 수집하고, 키워드 일치 수, 여러 검색어에서 반복 노출된 빈도, 출시/광고/판매/시장/브랜드 같은 상업 신호, 최신성을 합산해 중요도 점수가 높은 1건을 업로드합니다.
 
 오늘 수동으로 1건 실행:
 

@@ -45,8 +45,9 @@ export const configSchema = z.object({
   INDUSTRY_NEWS_SCHEDULER_ENABLED: envBoolean.default(true),
   INDUSTRY_NEWS_CRON: z.string().default("0 9 * * 1-5"),
   INDUSTRY_NEWS_TIMEZONE: z.string().default("Asia/Seoul"),
-  INDUSTRY_NEWS_RSS_URL: z.string().url().default("https://news.google.com/rss/search?q=%EC%9E%90%EB%8F%99%EC%B0%A8%20%EC%82%B0%EC%97%85&hl=ko&gl=KR&ceid=KR:ko"),
-  INDUSTRY_NEWS_MAX_CANDIDATES: z.coerce.number().int().positive().default(10)
+  INDUSTRY_NEWS_RSS_URL: z.string().url().optional(),
+  INDUSTRY_NEWS_KEYWORDS: z.string().default("침구,매트리스,이불,베개,베게,냉감,모달,양모,침대,극세사,세사,순면,토퍼,쇼파,소파"),
+  INDUSTRY_NEWS_MAX_CANDIDATES: z.coerce.number().int().positive().default(30)
 });
 
 export const config = configSchema.parse(process.env);

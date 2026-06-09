@@ -47,7 +47,10 @@ test("industry news body stores source link and summary provider", () => {
       title: "테스트 업계뉴스",
       link: "https://example.com/news",
       published: "Tue, 09 Jun 2026 09:00:00 +0900",
-      summarySource: "원문"
+      summarySource: "매트리스 신제품 출시",
+      matchedKeywords: ["매트리스"],
+      score: 21,
+      scoreReasons: ["키워드 1개 일치", "노출 빈도 1회", "상업/광고 신호 1개"]
     },
     "요약 본문",
     "fallback"
@@ -55,5 +58,7 @@ test("industry news body stores source link and summary provider", () => {
 
   assert.match(body, /요약 본문/);
   assert.match(body, /출처: https:\/\/example.com\/news/);
+  assert.match(body, /선정 키워드: 매트리스/);
+  assert.match(body, /중요도 점수: 21/);
   assert.match(body, /요약 방식: RSS 원문 기반 fallback/);
 });

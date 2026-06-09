@@ -2,13 +2,23 @@
 
 import { useState } from "react";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
+function apiBaseUrl() {
+  if (typeof window === "undefined") {
+    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://192.168.0.6:4000";
+  }
+
+  if (window.location.port === "3000") {
+    return `${window.location.protocol}//${window.location.hostname}:4000`;
+  }
+
+  return process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+}
 
 export function AttendancePanel() {
   const [status, setStatus] = useState("오늘 근태를 기록해 주세요.");
 
   async function clock(type: "clock-in" | "clock-out") {
-    const response = await fetch(`${apiBaseUrl}/api/attendance/${type}`, {
+    const response = await fetch(`${apiBaseUrl()}/api/attendance/${type}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ memo: "웹 대시보드 기록" })
