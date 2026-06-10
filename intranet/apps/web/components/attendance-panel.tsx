@@ -4,14 +4,14 @@ import { useState } from "react";
 
 function apiBaseUrl() {
   if (typeof window === "undefined") {
-    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://192.168.0.6:4000";
+    return "";
   }
 
   if (window.location.port === "3000") {
     return `${window.location.protocol}//${window.location.hostname}:4000`;
   }
 
-  return process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  return "";
 }
 
 export function AttendancePanel() {
