@@ -86,6 +86,36 @@ main {
   margin-bottom: 24px;
 }
 
+.build-proof {
+  align-items: center;
+  background: #0f1f4d;
+  border: 1px solid #2f4aa3;
+  border-radius: 18px;
+  color: white;
+  display: flex;
+  gap: 14px;
+  margin: -8px 0 24px;
+  padding: 14px 18px;
+}
+
+.build-proof span {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+}
+
+.build-proof strong {
+  font-family: monospace;
+  font-size: 15px;
+}
+
+.build-proof p {
+  color: #dce6ff;
+  margin: 0 0 0 auto;
+}
+
 .dashboard-kpis {
   display: grid;
   gap: 16px;

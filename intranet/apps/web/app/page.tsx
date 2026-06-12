@@ -6,6 +6,8 @@ import { ModuleGrid } from "../components/module-grid";
 import { PhaseTwoPanel } from "../components/phase-two-panel";
 
 export default function Home() {
+  const deployVersion = process.env.NEXT_PUBLIC_DEPLOY_VERSION ?? "local-dev";
+
   return (
     <main>
       <section className="hero">
@@ -18,6 +20,12 @@ export default function Home() {
           <span>운영 상태</span>
           <strong>HTTPS + SSO + AI Agent</strong>
         </div>
+      </section>
+
+      <section className="build-proof" aria-label="현재 배포 빌드 확인">
+        <span>빌드 확인</span>
+        <strong>{deployVersion}</strong>
+        <p>이 값이 보이면 현재 브라우저 화면은 방금 빌드된 Web 컨테이너 산출물입니다.</p>
       </section>
 
       <section className="dashboard-kpis" aria-label="인트라넷 핵심 현황">
