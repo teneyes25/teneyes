@@ -26,6 +26,7 @@ export const configSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
   CORS_ORIGINS: z.string().default("http://localhost:3000,http://127.0.0.1:3000,http://192.168.0.6:3000,http://193.168.0.6:3000"),
   KEYCLOAK_ISSUER: z.string().default("http://localhost:8080/realms/maejong-intranet"),
+  KEYCLOAK_PUBLIC_ISSUER: z.string().default("http://192.168.0.6:8080/realms/maejong-intranet"),
   KEYCLOAK_AUDIENCE: z.string().default("intranet-api"),
   AUTH_REQUIRED: envBoolean.default(false),
   MINIO_ENDPOINT: z.string().default("localhost"),

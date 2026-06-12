@@ -30,6 +30,13 @@ test("module registry exposes all required intranet modules", async () => {
   ]);
 });
 
+test("signin endpoint redirects to Keycloak authorization flow", async () => {
+  const response = await request(createApp()).get("/api/auth/signin").expect(302);
+  assert.match(response.header.location, /\/realms\/maejong-intranet\/protocol\/openid-connect\/auth/);
+  assert.match(response.header.location, /client_id=intranet-web/);
+  assert.match(response.header.location, /response_type=code/);
+});
+
 test("environment booleans parse string false correctly", () => {
   const parsed = configSchema.parse({
     AUTH_REQUIRED: "false",

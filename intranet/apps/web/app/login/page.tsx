@@ -1,18 +1,7 @@
-const keycloakBaseUrl = process.env.NEXT_PUBLIC_KEYCLOAK_BASE_URL ?? "http://192.168.0.6:8080";
-const keycloakRealm = process.env.NEXT_PUBLIC_KEYCLOAK_REALM ?? "maejong-intranet";
-const keycloakClientId = process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ?? "intranet-web";
 const deployVersion = process.env.NEXT_PUBLIC_DEPLOY_VERSION ?? "local-dev";
 
 function loginUrl() {
-  const redirectUri = "https://192.168.0.6/";
-  const params = new URLSearchParams({
-    client_id: keycloakClientId,
-    redirect_uri: redirectUri,
-    response_type: "code",
-    scope: "openid profile email"
-  });
-
-  return `${keycloakBaseUrl}/realms/${keycloakRealm}/protocol/openid-connect/auth?${params.toString()}`;
+  return "/api/auth/signin?callbackUrl=https%3A%2F%2F192.168.0.6%2F";
 }
 
 export default function LoginPage() {

@@ -8,6 +8,7 @@ import { agentRouter } from "./modules/agentRoutes.js";
 import { aiRouter } from "./modules/aiRoutes.js";
 import { approvalRouter } from "./modules/approvalRoutes.js";
 import { attendanceRouter } from "./modules/attendanceRoutes.js";
+import { authRouter } from "./modules/authRoutes.js";
 import { contentRouter } from "./modules/contentRoutes.js";
 import { documentRouter } from "./modules/documentRoutes.js";
 import { schedulerRouter } from "./modules/schedulerRoutes.js";
@@ -34,6 +35,7 @@ export function createApp() {
     res.json({ ok: true, service: "maejong-intranet-api" });
   });
 
+  app.use("/api/auth", authRouter);
   app.use(requireAuth);
   app.use("/api/attendance", attendanceRouter);
   app.use("/api/approvals", approvalRouter);
