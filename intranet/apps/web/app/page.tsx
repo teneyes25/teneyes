@@ -15,6 +15,10 @@ export default function Home() {
           <p className="eyebrow">Maejong Intranet</p>
           <h1>인트라넷 홈페이지</h1>
           <p>오늘의 업계뉴스, 전자결재, 문서, 근태, 메종이 AI 상담을 한 화면에서 확인합니다.</p>
+          <div className="hero-actions">
+            <a href="/login">통합 로그인</a>
+            <a className="secondary-link" href="#modules">업무 모듈 보기</a>
+          </div>
         </div>
         <div className="hero-badge">
           <span>운영 상태</span>
@@ -51,7 +55,7 @@ export default function Home() {
         </article>
       </section>
 
-      <div className="dashboard-layout">
+      <div className="dashboard-layout" id="modules">
         <div className="dashboard-main">
           <IndustryNewsBoard />
           <ModuleGrid />

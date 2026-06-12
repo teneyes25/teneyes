@@ -117,6 +117,9 @@ services:
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://192.168.0.6:4000
       NEXT_PUBLIC_DEPLOY_VERSION: ${DEPLOY_VERSION:-local-dev}
+      NEXT_PUBLIC_KEYCLOAK_BASE_URL: http://192.168.0.6:8080
+      NEXT_PUBLIC_KEYCLOAK_REALM: maejong-intranet
+      NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: intranet-web
     depends_on:
       api:
         condition: service_started
