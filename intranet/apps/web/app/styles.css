@@ -21,7 +21,7 @@ body {
 }
 
 main {
-  max-width: 1200px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 40px 24px;
 }
@@ -38,8 +38,11 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 32px;
-  padding: 40px;
+  padding: 36px 40px;
   margin-bottom: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(29, 78, 216, 0.18), transparent 34%),
+    linear-gradient(135deg, #ffffff 0%, #f3f7ff 100%);
 }
 
 .hero h1 {
@@ -65,6 +68,7 @@ main {
   padding: 24px;
   border-radius: 20px;
   background: #eef4ff;
+  border: 1px solid #c9d8ff;
 }
 
 .hero-badge span,
@@ -80,6 +84,58 @@ main {
 .panel {
   padding: 24px;
   margin-bottom: 24px;
+}
+
+.dashboard-kpis {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 24px;
+}
+
+.dashboard-kpis article {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: 0 12px 36px rgba(23, 32, 51, 0.07);
+  padding: 20px;
+}
+
+.dashboard-kpis span {
+  color: var(--muted);
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.dashboard-kpis strong {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.dashboard-kpis p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.dashboard-layout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.75fr);
+}
+
+.dashboard-main,
+.dashboard-side {
+  display: grid;
+  gap: 24px;
+}
+
+.dashboard-side .panel {
+  margin-bottom: 0;
 }
 
 .section-heading {
@@ -256,16 +312,42 @@ textarea {
 }
 
 .maejong-chat {
-  bottom: 24px;
+  bottom: auto;
   position: fixed;
-  right: 24px;
-  z-index: 20;
+  right: 28px;
+  top: 132px;
+  z-index: 50;
 }
 
 .maejong-chat-button {
-  border-radius: 999px;
-  box-shadow: 0 12px 32px rgba(29, 78, 216, 0.32);
+  align-items: center;
+  animation: maejongPulse 2.6s ease-in-out infinite;
+  border-radius: 18px;
+  box-shadow: 0 18px 46px rgba(29, 78, 216, 0.36);
+  display: flex;
+  min-width: 178px;
   padding: 16px 20px;
+}
+
+.maejong-chat-button::before {
+  background: rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  content: "AI";
+  font-size: 12px;
+  font-weight: 900;
+  margin-right: 10px;
+  padding: 5px 8px;
+}
+
+@keyframes maejongPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 .maejong-chat-window {
@@ -407,8 +489,19 @@ textarea {
     display: block;
   }
 
+  .dashboard-kpis,
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
   .hero-badge {
     margin-top: 24px;
+  }
+
+  .maejong-chat {
+    bottom: 20px;
+    right: 20px;
+    top: auto;
   }
 }
 
