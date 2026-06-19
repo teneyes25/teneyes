@@ -1,0 +1,89 @@
+{
+  "realm": "maejong-intranet",
+  "enabled": true,
+  "displayName": "Maejong Intranet",
+  "roles": {
+    "realm": [
+      { "name": "employee", "description": "기본 임직원" },
+      { "name": "approver", "description": "결재 승인자" },
+      { "name": "sales", "description": "영업 담당자" },
+      { "name": "dealer", "description": "대리점 사용자" },
+      { "name": "admin", "description": "시스템 관리자" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "intranet-web",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://192.168.0.6:3000/*",
+        "https://localhost/*",
+        "https://192.168.0.6/",
+        "https://192.168.0.6/*",
+        "https://193.168.0.6/*"
+      ],
+      "webOrigins": [
+        "+"
+      ]
+    },
+    {
+      "clientId": "intranet-api",
+      "enabled": true,
+      "bearerOnly": true
+    }
+  ],
+  "groups": [
+    { "name": "임직원", "realmRoles": ["employee"] },
+    { "name": "결재승인자", "realmRoles": ["approver"] },
+    { "name": "영업", "realmRoles": ["sales"] },
+    { "name": "대리점", "realmRoles": ["dealer"] },
+    { "name": "전산관리자", "realmRoles": ["admin", "employee"] }
+  ],
+  "identityProviders": [],
+  "components": {
+    "org.keycloak.storage.UserStorageProvider": [
+      {
+        "name": "maejong-ad-ldap",
+        "providerId": "ldap",
+        "config": {
+          "enabled": ["true"],
+          "vendor": ["ad"],
+          "connectionUrl": ["ldap://ad.maejong.local:389"],
+          "usersDn": ["OU=Users,DC=maejong,DC=local"],
+          "bindDn": ["CN=svc_keycloak,OU=Service Accounts,DC=maejong,DC=local"],
+          "bindCredential": ["${KC_LDAP_BIND_CREDENTIAL}"],
+          "usernameLDAPAttribute": ["sAMAccountName"],
+          "rdnLDAPAttribute": ["cn"],
+          "uuidLDAPAttribute": ["objectGUID"],
+          "userObjectClasses": ["person, organizationalPerson, user"],
+          "editMode": ["READ_ONLY"],
+          "importEnabled": ["true"],
+          "syncRegistrations": ["false"],
+          "searchScope": ["2"],
+          "useTruststoreSpi": ["ldapsOnly"]
+        },
+        "subComponents": {
+          "org.keycloak.storage.ldap.mappers.LDAPStorageMapper": [
+            {
+              "name": "ad-groups-to-keycloak-groups",
+              "providerId": "group-ldap-mapper",
+              "config": {
+                "groups.dn": ["OU=Groups,DC=maejong,DC=local"],
+                "group.name.ldap.attribute": ["cn"],
+                "group.object.classes": ["group"],
+                "membership.ldap.attribute": ["member"],
+                "membership.attribute.type": ["DN"],
+                "mode": ["READ_ONLY"],
+                "preserve.group.inheritance": ["true"],
+                "user.roles.retrieve.strategy": ["LOAD_GROUPS_BY_MEMBER_ATTRIBUTE"]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
